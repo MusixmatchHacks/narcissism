@@ -801,8 +801,10 @@ function removeDuplicates(discography)
 function lyricsForWordTree(discography)
 {
 	// allPhrases = new Array()
+	console.log(discography)
 	disco = new Array()
 	// allPhrases = ''
+	trackArray = new Array()
 	for (var i = 0; i < discography.length; i++) 
 	{
 		album = discography[i]
@@ -812,8 +814,12 @@ function lyricsForWordTree(discography)
 		for (var j = 0; j < album.length; j++) 
 		{
 			// console.log(album[])
+			trackObj = {}
 			song = album[j]["lyrics"].split('\n')
-
+			track_pronoun = 0
+			track_poss_pronoun = 0
+			trackObj['track_name'] = album[j]['track']['track_name']
+			trackObj['spotify_id'] = album[j]['track']['track_spotify_id']
 			release_date = album[j]['release_date']
 			album_title = album[j]['album_title']
 			// allPhrases = allPhrases + song + '\n'
@@ -840,15 +846,19 @@ function lyricsForWordTree(discography)
 					{
 
 						pronoun = pronoun+1
+						track_pronoun = track_pronoun +1
 					}
 					if(poss_pronouns.indexOf(word)!=-1)
 					{
 						// console.log(word)
 						poss_pronoun = poss_pronoun+1
+						track_poss_pronoun = track_poss_pronoun +1
 					}
 
 				}
 			}
+			trackObj['narcissism'] = Math.floor((track_poss_pronoun/track_pronoun)*100)
+			trackArray.push(trackObj)
 		}
 		newAlbum = {}
 		newAlbum['album'] = album
@@ -859,7 +869,7 @@ function lyricsForWordTree(discography)
 		newAlbum['narcissism'] = Math.floor((poss_pronoun/pronoun)*100)
 		disco.push(newAlbum)
 	}
-	return(disco)
+	return[disco, trackArray]
 }
 
 
@@ -881,10 +891,46 @@ $("#artist").keyup(function(event) {
         	// doAnalysis(filteredDiscography)
         	// console.log(finalAlbumList)
         	// return(doAnalysis(filteredDiscography))
-        	return(lyricsForWordTree(filteredDiscography))
+        	// return(lyricsForWordTree(filteredDiscography))
+        	return filteredDiscography
         })
-        .then(function(phrases)
+        .then(function(filteredDiscography)
         {
+        	arr = lyricsForWordTree(filteredDiscography)
+        	phrases = arr[0]
+        	trackArray = arr[1]
+        	
+        	
+        	trackArray.sort(function(a,b){
+        	var c = a["narcissism"];
+        	var d = b["narcissism"];
+        	return d-c;
+        	})
+
+
+			console.log(trackArray)
+        	narcissisticPlaylistLength = 15
+        	
+        	if(trackArray.length < 15)
+        	{
+        		narcissisticPlaylistLength = trackArray.length	
+        	}
+        	
+        	topTracksData = new Array()
+        	playlist = new Array()
+
+        	for (var i = 0; i < narcissisticPlaylistLength; i++) 
+        	{
+        		topTrack = new Array()
+        		topTrack.push(trackArray[i]['track_name'])
+        		topTrack.push(trackArray[i]['narcissism'])
+        		playlist.push(trackArray[i]['spotify_id'])
+        		topTracksData.push(topTrack)
+        		
+        	}
+
+        	// console.log(topTracksData)
+        	// console.log(playlist)
         	phrases.sort(function(a,b){
         	var c = new Date(a["release_date"]);
         	var d = new Date(b["release_date"]);
@@ -907,6 +953,7 @@ $("#artist").keyup(function(event) {
 
         	console.log(discoData)
         	drawNarcissism(discoData, searchQuery.value)
+        	drawTrackNarcissism(topTracksData, searchQuery.value)
 
         	document.getElementById("totalNarcissism").innerHTML = '<p> Total narcissism of '+ (searchQuery.value).toUpperCase() + ': <b>' + totalNarcissism +'</b>%</p>'
         	document.getElementById("status").style.display = "inline"
@@ -951,7 +998,61 @@ $("#artist").keyup(function(event) {
             type: 'column'
         },
         title: {
-            text: 'Narcissism of ' + artistName
+            text: 'Narcissism of ' + artistName + ' albums'
+        },
+        subtitle: {
+            text: 'Source: <a href="http://musixmatch.com/">Musixmatch</a>'
+        },
+        xAxis: {
+            type: 'category',
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Narcissism (%)'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: 'Narcissism: <b>{point.y:.1f}</b>'
+        },
+        series: [{
+            name: 'Narcissism',
+            data: discoData ,
+            colorByPoint: true,
+            dataLabels: {
+                enabled: true,
+                rotation: -90,
+                color: '#FFFFFF',
+                align: 'right',
+                x: 4,
+                y: 10,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif',
+                    textShadow: '0 0 3px black'
+                }
+            }
+        }]
+    });
+};
+
+function drawTrackNarcissism(discoData, artistName) {
+    $('#container2').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Top narcissistic tracks of ' + artistName
         },
         subtitle: {
             text: 'Source: <a href="http://musixmatch.com/">Musixmatch</a>'
