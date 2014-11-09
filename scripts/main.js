@@ -879,8 +879,8 @@ $("#artist").keyup(function(event) {
     {
     	// myStopFunction();
     	
-        // $("#status").text("Please select language for songs in playlist")
-        // document.getElementById("progress").style.display = "none"
+        // $("#status").text("Processing")
+        document.getElementById("status2").style.display = "inline"
         getArtistAlbumMbids(searchQuery.value).then(function(allTracks)
         {
         	// console.log(allTracks)
@@ -954,7 +954,7 @@ $("#artist").keyup(function(event) {
         	console.log(discoData)
         	drawNarcissism(discoData, searchQuery.value)
         	drawTrackNarcissism(topTracksData, searchQuery.value)
-
+        	document.getElementById("status2").style.display = "none"
         	document.getElementById("totalNarcissism").innerHTML = '<p> Total narcissism of '+ (searchQuery.value).toUpperCase() + ': <b>' + totalNarcissism +'</b>%</p>'
         	document.getElementById("status").style.display = "inline"
         	tweetTxt = 'The narcissism level of ' + (searchQuery.value).toUpperCase() +  ' is ' + totalNarcissism + '%'
@@ -963,6 +963,8 @@ $("#artist").keyup(function(event) {
         	// console.log(document.getElementById("twitter").innerHTML)
         	// ev.preventDefault();
     		// Remove existing iframe
+    		playlist_name = 'Top narcissistic tracks of ' + (searchQuery.value).toUpperCase()
+    		displayPlaylist(playlist,  playlist_name)
     		$('#tweetBtn iframe').remove();
     				// Generate new markup
    			var tweetBtn = $('<a></a>')
@@ -991,6 +993,33 @@ $("#artist").keyup(function(event) {
 // $('#tweetBtn').on('click', function(ev) {
 
 // });
+function displayPlaylist(track_ids, playlist_name)
+{
+	// console.log('here4')
+	console.log(track_ids)
+	if(track_ids.length > 0)
+	{
+		// $("#status").text("Making playlist with the tracks found.")
+		// <iframe src="https://embed.spotify.com/?uri=spotify:trackset:PREFEREDTITLE:5Z7ygHQo02SUrFmcgpwsKW,1x6ACsKV4UdWS2FMuPFUiT,4bi73jCM02fMpkI11Lqmfe" frameborder="0" allowtransparency="true"></iframe>
+		localStorage.setItem('track_ids', JSON.stringify(track_ids));
+		localStorage.setItem('playlist-name', playlist_name)
+		var src = "https://embed.spotify.com/?uri=spotify:trackset:"+playlist_name+ ':'+ track_ids.toString()
+		//console.log(src)
+		// $("#status").text("Done!")
+		// document.getElementById("SpotifyWidget").style.visibility = "visible"
+		$('#SpotifyWidget').empty()
+		document.getElementById("SpotifyWidget").innerHTML += '<iframe id = "SpotifyWidgetFrame" frameborder="0" allowtransparency="true" width="373" height="453" style = "display:inline"></iframe>'
+		document.getElementById("SpotifyWidgetFrame").src = src
+		document.getElementById("spotifyStuff").style.display = "inherit"
+
+
+		//console.log(document.getElementById("SpotifyWidget").innerHTML)
+		// have_valid_playlist = true
+		// document.getElementById("progress").style.display = "none"
+				
+		// return Promise.resolve()
+	}
+}
 
  function drawNarcissism(discoData, artistName) {
     $('#container').highcharts({
@@ -1008,7 +1037,7 @@ $("#artist").keyup(function(event) {
             labels: {
                 rotation: -45,
                 style: {
-                    fontSize: '13px',
+                    fontSize: '15px',
                     fontFamily: 'Verdana, sans-serif'
                 }
             }
@@ -1062,7 +1091,7 @@ function drawTrackNarcissism(discoData, artistName) {
             labels: {
                 rotation: -45,
                 style: {
-                    fontSize: '13px',
+                    fontSize: '15px',
                     fontFamily: 'Verdana, sans-serif'
                 }
             }
@@ -1322,9 +1351,9 @@ Highcharts.setOptions(Highcharts.theme);
 	
 // }
 
-// SpotifySave.onclick = function(e){
-//   loginWithSpotify()
-// }
+SpotifySave.onclick = function(e){
+  loginWithSpotify()
+}
 
 
 // GetImages.onclick = function(e){
