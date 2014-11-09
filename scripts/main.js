@@ -226,7 +226,7 @@ function getTracksFromAlbum_Mbid(albumObj)
 			}
 			else
 			{
-				console.log("album tracks NOT FOUND " + album_mbid)
+				console.log("album tracks NOT FOUND ") //+ album_mbid)
 				album = []
 				resolve(album)
 				// reject("album tracks not found")	
