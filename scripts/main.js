@@ -857,7 +857,14 @@ function lyricsForWordTree(discography)
 
 				}
 			}
-			trackObj['narcissism'] = Math.floor((track_poss_pronoun/track_pronoun)*100)
+			if (track_pronoun!=0)
+			{
+				trackObj['narcissism'] = Math.floor((track_poss_pronoun/track_pronoun)*100)
+			}
+			else
+			{
+				trackObj['narcissism'] = 0	
+			}
 			trackArray.push(trackObj)
 		}
 		newAlbum = {}
@@ -866,7 +873,15 @@ function lyricsForWordTree(discography)
 		newAlbum['poss_pronoun'] = poss_pronoun
 		newAlbum['release_date'] = release_date
 		newAlbum['album_title'] = album_title
-		newAlbum['narcissism'] = Math.floor((poss_pronoun/pronoun)*100)
+		if (pronoun!=0)
+		{
+			newAlbum['narcissism'] = Math.floor((poss_pronoun/pronoun)*100)
+		}
+		else
+		{
+			newAlbum['narcissism'] = 0	
+		}
+		
 		disco.push(newAlbum)
 	}
 	return[disco, trackArray]
@@ -949,7 +964,15 @@ $("#artist").keyup(function(event) {
         		pronoun = pronoun + phrases[i]['pronoun']
         		poss_pronoun = poss_pronoun + phrases[i]['poss_pronoun']
         	}
-        	totalNarcissism = Math.floor(poss_pronoun/pronoun*100)
+        	if (pronoun!=0)
+        	{
+        		totalNarcissism = Math.floor(poss_pronoun/pronoun*100)
+        	}
+        	else
+        	{
+        		totalNarcissism = 0	
+        	}
+        	
 
         	console.log(discoData)
         	drawNarcissism(discoData, searchQuery.value)
