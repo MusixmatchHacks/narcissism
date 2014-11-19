@@ -937,7 +937,16 @@ $("#artist").keyup(function(event) {
         	for (var i = 0; i < narcissisticPlaylistLength; i++) 
         	{
         		topTrack = new Array()
-        		topTrack.push(trackArray[i]['track_name'])
+        		
+        		if (trackArray[i]['track_name'].length > 13)
+        		{
+        			topTrack.push(trackArray[i]['track_name'].slice(0,13) + '..')
+        		}
+        		else
+        		{
+        			topTrack.push(trackArray[i]['track_name'])	
+        		}
+
         		topTrack.push(trackArray[i]['narcissism'])
         		playlist.push(trackArray[i]['spotify_id'])
         		topTracksData.push(topTrack)
@@ -958,7 +967,14 @@ $("#artist").keyup(function(event) {
         	{
         		// Things[i]
         		albumData = new Array()
-        		albumData.push(phrases[i]['album_title'])
+        		if (phrases[i]['album_title'].length > 13)
+        		{
+        			albumData.push(phrases[i]['album_title'].slice(0,13) + '..')
+        		}
+        		else
+        		{
+        			albumData.push(phrases[i]['album_title'])	
+        		}
         		albumData.push(phrases[i]['narcissism']) 
         		discoData.push(albumData)
         		pronoun = pronoun + phrases[i]['pronoun']
@@ -975,6 +991,7 @@ $("#artist").keyup(function(event) {
         	
 
         	console.log(discoData)
+
         	drawNarcissism(discoData, searchQuery.value)
         	drawTrackNarcissism(topTracksData, searchQuery.value)
         	document.getElementById("status2").style.display = "none"
